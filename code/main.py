@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
     print(f"Reserve Price: {reserve_price}\n# Bidders: {num_bidders}\nValuation Range: {valuation_range}\n")
 
-    # Initialize strategy instances
-    nash_strategy = NashEquilibriumStrategy(reserved_price=reserve_price, num_bidders=num_bidders)
+    # Create strategy instances
+    nash_strategy = NashEquilibriumStrategy(num_bidders=num_bidders, lower_bound=valuation_range[0], upper_bound=valuation_range[1])
     simple_strategy = SimpleProportionalStrategy(risk_factor=0.85)
     follower_strategy = FollowerStrategy(fallback_strategy=simple_strategy)
 
@@ -39,12 +39,14 @@ if __name__ == "__main__":
         (follower_strategy, "Follower Strategy")
     ]
 
+    # Create auctioneer and bidders
     auctioneer = Auctioneer(valuation=1000, reserve_price=reserve_price)
     bidders = generate_bidders(num_bidders, strategies, valuation_range)
 
     for bidder in bidders:
         print(f"Bidder {bidder.id}: Valuation = {bidder.base_valuation:.2f}, Strategy = {bidder.strategy_name}")
 
-    auction = AuctionSystem(auctioneer, bidders, num_rounds=5)
+    # Conduct auction
+    auction = AuctionSystem(auctioneer, bidders, num_rounds=100)
     auction.conduct_auction()
     auction.analyze_revenue()
